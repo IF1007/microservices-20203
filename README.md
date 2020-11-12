@@ -14,7 +14,7 @@
 ## Tecnologias utilizadas
 *Em construção..*
 
-## Aplicação de referência
+## Aplicação referência
 [Tea Store](https://github.com/DescartesResearch/TeaStore) é uma aplicação baseada em microsserviços para ser usada em benchmarks e testes.
 
 ## Time
