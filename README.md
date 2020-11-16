@@ -3,7 +3,7 @@
 *Em construção..*
 
 ## Arquitetura
-*Em construção..*
+![Arquitetura do projeto, que utiliza docker e elk stack, junto aos microsserviços da aplicação TeaStore](./assets/arquitetura.png)
 
 ## Dependências
 *Em construção..*
