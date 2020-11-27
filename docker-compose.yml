@@ -1,20 +1,47 @@
 version: "2.2"
 services:
+    # ---------------------------------------
     elasticsearch:
         image: elasticsearch:7.9.3
         container_name: elasticsearch
         hostname: elasticsearch
         environment:
-            - "discovery.type=single-node"
+            - discovery.type=single-node
+            - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+            - http.host=0.0.0.0
+            - transport.host=127.0.0.1
+            - network.host=0.0.0.0
+            - cluster.name="elastic_stack_logging"
+            - node.name="elastic_stack_logging_data"
+            - discovery.zen.minimum_master_nodes=1
+            - http.cors.enabled=true
+            - http.cors.allow-origin="*"
         ports:
             - 9200:9200
             - 9300:9300
         networks:
             - elknetwork
+    # ---------------------------------------
+    rabbitmq:
+        image: descartesresearch/teastore-kieker-rabbitmq
+        expose:
+          - "5672"
+        ports:
+          - "8081:8080"
+          - "5672:5672"
+          - "15672:15672"
+        networks:
+            - elknetwork
+            - teastore
+    # ---------------------------------------
     kibana:
         image: kibana:7.9.3
         container_name: kibana
         hostname: kibana
+        environment:
+            - server.name=kibana
+            - server.host="0"
+            - elasticsearch.url=http://elasticsearch:9200
         ports:
             - 5601:5601
         links:
@@ -23,6 +50,7 @@ services:
           - elasticsearch
         networks:
           - elknetwork
+    # ---------------------------------------
     logstash:
         image: logstash:7.9.3
         container_name: logstash
@@ -31,62 +59,100 @@ services:
             - 9600:9600
             - 8089:8089
         volumes:
-          - .\logstash:/usr/share/logstash/pipeline/
+          - ./product.logstash.conf:/config/product.logstash.conf      
+        command: logstash -f /config/product.logstash.conf 
         links:
             - elasticsearch:elasticsearch
         depends_on:
+          - rabbitmq
           - elasticsearch
         networks:
           - elknetwork
+    # ---------------------------------------
     registry:
-      image: descartesresearch/teastore-registry
-      expose:
-        - "8080"
+        image: descartesresearch/teastore-registry
+        expose:
+          - "8080"
+        networks:
+            - teastore
+    # ---------------------------------------
     db:
-      image: descartesresearch/teastore-db
-      expose:
-        - "3306"
-      ports:
-        - "3306:3306"
+        image: descartesresearch/teastore-db
+        expose:
+          - "3306"
+        ports:
+          - "3306:3306"
+        networks:
+            - teastore
+    # ---------------------------------------
     persistence:
-      image: descartesresearch/teastore-persistence
-      expose:
-        - "8080"
-      environment:
-        HOST_NAME: "persistence"
-        REGISTRY_HOST: "registry"
-        DB_HOST: "db"
-        DB_PORT: "3306"
+        image: descartesresearch/teastore-persistence
+        expose:
+          - "8080"
+        environment:
+          HOST_NAME: "persistence"
+          REGISTRY_HOST: "registry"
+          DB_HOST: "db"
+          DB_PORT: "3306"
+          RABBITMQ_HOST: "rabbitmq"
+          LOG_TO_FILE: "true"
+        networks:
+            - teastore
+    # ---------------------------------------
     auth:
-      image: descartesresearch/teastore-auth
-      expose:
-        - "8080"
-      environment:
-        HOST_NAME: "auth"
-        REGISTRY_HOST: "registry"
+        image: descartesresearch/teastore-auth
+        expose:
+          - "8080"
+        environment:
+          HOST_NAME: "auth"
+          REGISTRY_HOST: "registry"
+          RABBITMQ_HOST: "rabbitmq"
+          LOG_TO_FILE: "true"
+        networks:
+            - teastore
+    # ---------------------------------------
     image:
-      image: descartesresearch/teastore-image
-      expose:
-        - "8080"
-      environment:
-        HOST_NAME: "image"
-        REGISTRY_HOST: "registry"
+        image: descartesresearch/teastore-image
+        expose:
+          - "8080"
+        environment:
+          HOST_NAME: "image"
+          REGISTRY_HOST: "registry"
+          RABBITMQ_HOST: "rabbitmq"
+          LOG_TO_FILE: "true"
+        networks:
+            - teastore
+    # ---------------------------------------
     recommender:
-      image: descartesresearch/teastore-recommender
-      expose:
-        - "8080"
-      environment:
-        HOST_NAME: "recommender"
-        REGISTRY_HOST: "registry"
+        image: descartesresearch/teastore-recommender
+        expose:
+          - "8080"
+        environment:
+          HOST_NAME: "recommender"
+          REGISTRY_HOST: "registry"
+          RABBITMQ_HOST: "rabbitmq"
+          LOG_TO_FILE: "true"
+        networks:
+            - teastore
+    # ---------------------------------------
     webui:
-      image: descartesresearch/teastore-webui
-      expose:
-        - "8080"
-      environment:
-        HOST_NAME: "webui"
-        REGISTRY_HOST: "registry"
-      ports:
-        - "8080:8080"
+        image: descartesresearch/teastore-webui
+        environment:
+          HOST_NAME: "webui"
+          REGISTRY_HOST: "registry"
+          RABBITMQ_HOST: "rabbitmq"
+          LOG_TO_FILE: "true"
+        ports:
+          - "8080:8080"
+        volumes:
+          - /Volumes:/kieker/logs/
+        networks:
+            - teastore
+    # ---------------------------------------
+volumes:
+  mq_data:
 networks:
-    elknetwork:
-        driver: bridge
+  elknetwork:
+      driver: bridge
+  teastore:
+      driver: bridge
