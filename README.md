@@ -25,4 +25,4 @@
 1. Danilo Lira | <drla@cin.ufpe.br>
 2. Emerson Victor | <evfl@cin.ufpe.br>
 3. Gabriel Ramos | <grro@cin.ufpe.br>
-4. Victor Sena | <vsla@cin.ufpe.br>
+4. Victor Sena Attar | <vsla@cin.ufpe.br>
