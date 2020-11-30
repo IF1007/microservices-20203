@@ -6,10 +6,10 @@
 ![Arquitetura do projeto, que utiliza docker e elk stack, junto aos microsserviços da aplicação TeaStore](./assets/arquitetura2.jpeg)
 
 ## Dependências
-*Em construção..*
+1. Docker Engine versão 19.03.13 ou maior
+2. Docker Compose version 2.5.0.1 ou maior
 
 ## Executando o projeto
-*Em construção..*
 
 ## Tecnologias utilizadas
 * Docker

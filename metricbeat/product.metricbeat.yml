@@ -1,0 +1,25 @@
+metricbeat.modules:
+- module: rabbitmq
+  metricsets: ["exchange", "connection", "node", "queue"]
+  period: 10s
+  hosts: ["rabbitmq:15672"]
+  username: admin
+  password: nimda
+
+- module: docker
+  metricsets: ["container", "cpu", "diskio", "event", "healthcheck", "image", "info", "memory", "network"]
+  hosts: ["unix:///var/run/docker.sock"]
+  period: 10s
+
+- module: elasticsearch
+  metricsets: ["node", "node_stats", "cluster_stats", "index"]
+  period: 10s
+  hosts: ["elasticsearch:9200"]  
+
+output.elasticsearch:
+  hosts: ["elasticsearch:9200"]
+
+setup.kibana:
+  host: "kibana:5601"  
+
+setup.dashboards.enabled: true
