@@ -10,7 +10,6 @@
 2. Docker Compose version 2.5.0.1 ou maior
 
 ## Executando o projeto
-*Em construção..*
 
 ## Tecnologias utilizadas
 * Docker
