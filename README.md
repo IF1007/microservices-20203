@@ -18,7 +18,7 @@
 * Metricbeat
 * RabbitMQ
 
-### Executando o projeto
+## Executando o projeto
 Clone o repositorio:
 
 ```sh
