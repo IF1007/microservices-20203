@@ -18,14 +18,14 @@
 * Kibana
 * Metricbeat
 
-### Installation
+### Instalação
 
 Inicialmente clone o repositorio
 
 ```sh
 $ mkdir Logs_mo
 $ cd Logs_mo
-$ https://github.com/emersonvictor/microservices-20203.git
+$ git clone https://github.com/emersonvictor/microservices-20203.git
 ```
 
 Depois de clonar, você deve rodar o docker para iniciar a aplicação
