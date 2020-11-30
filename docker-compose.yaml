@@ -1,5 +1,6 @@
 version: '3'
 services:
+  # ---------------------------------------
   registry:
     image: descartesresearch/teastore-registry
     expose:
@@ -72,7 +73,7 @@ services:
       - "8080:8080"
     networks:
         - teastore
- ##########################################################
+  # ---------------------------------------
   rabbitmq:
     container_name: RabbitMQ
     image: rabbitmq:3-management-alpine
@@ -87,8 +88,7 @@ services:
     environment:
       RABBITMQ_DEFAULT_USER: admin
       RABBITMQ_DEFAULT_PASS: nimda
-      # RABBITMQ_DEFAULT_VHOST: EnterpriseLog
-  ##########################################################
+  # ---------------------------------------
   elasticsearch:
     container_name: ElasticSearch    
     image: docker.elastic.co/elasticsearch/elasticsearch-oss:7.8.0
@@ -115,7 +115,7 @@ services:
       retries: 5     
     networks:
       - log
-  ##########################################################
+    # ---------------------------------------
   kibana:
     container_name: Kibana    
     image: docker.elastic.co/kibana/kibana-oss:7.8.0
@@ -134,7 +134,7 @@ services:
       retries: 5     
     networks:
       - log
-  ##########################################################
+  # ---------------------------------------
   logstash:
     container_name: LogStash    
     image: docker.elastic.co/logstash/logstash-oss:7.8.0
@@ -146,7 +146,7 @@ services:
       - elasticsearch
     networks:
       - log    
-  ##########################################################
+  # ---------------------------------------
   metricbeat:
     container_name: metricbeat
     build: 
@@ -160,7 +160,7 @@ services:
     restart: on-failure
     networks:
       - log
-    ##########################################################
+  # ---------------------------------------
   elastichq:
     container_name: elastichq
     image: elastichq/elasticsearch-hq
@@ -171,7 +171,6 @@ services:
     restart: on-failure
     networks:
       - log
-
 
 volumes:
   mq_data:
