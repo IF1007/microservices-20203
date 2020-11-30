@@ -115,7 +115,7 @@ services:
       retries: 5     
     networks:
       - log
-    # ---------------------------------------
+  # ---------------------------------------
   kibana:
     container_name: Kibana    
     image: docker.elastic.co/kibana/kibana-oss:7.8.0
@@ -157,17 +157,6 @@ services:
     depends_on:
       - elasticsearch
       - kibana
-    restart: on-failure
-    networks:
-      - log
-  # ---------------------------------------
-  elastichq:
-    container_name: elastichq
-    image: elastichq/elasticsearch-hq
-    depends_on:
-      - elasticsearch
-    ports:
-      - "5000:5000"
     restart: on-failure
     networks:
       - log
