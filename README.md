@@ -24,6 +24,7 @@ Inicialmente clone o repositorio
 
 ```sh
 $ mkdir Logs_mo
+$ cd Logs_mo
 $ https://github.com/emersonvictor/microservices-20203.git
 ```
 
