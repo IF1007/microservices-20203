@@ -1,0 +1,184 @@
+version: '3'
+services:
+  registry:
+    image: descartesresearch/teastore-registry
+    expose:
+      - "8080"
+    networks:
+        - teastore
+  # ---------------------------------------
+  db:
+    image: descartesresearch/teastore-db
+    expose:
+      - "3306"
+    ports:
+      - "3306:3306"
+    networks:
+        - teastore
+  # ---------------------------------------
+  persistence:
+    image: descartesresearch/teastore-persistence
+    expose:
+      - "8080"
+    environment:
+      HOST_NAME: "persistence"
+      REGISTRY_HOST: "registry"
+      DB_HOST: "db"
+      DB_PORT: "3306"
+      RABBITMQ_HOST: "rabbitmq"
+    networks:
+        - teastore
+  # ---------------------------------------
+  auth:
+    image: descartesresearch/teastore-auth
+    expose:
+      - "8080"
+    environment:
+      HOST_NAME: "auth"
+      REGISTRY_HOST: "registry"
+      RABBITMQ_HOST: "rabbitmq"
+    networks:
+        - teastore
+  # ---------------------------------------
+  image:
+    image: descartesresearch/teastore-image
+    expose:
+      - "8080"
+    environment:
+      HOST_NAME: "image"
+      REGISTRY_HOST: "registry"
+      RABBITMQ_HOST: "rabbitmq"
+    networks:
+        - teastore
+  # ---------------------------------------
+  recommender:
+    image: descartesresearch/teastore-recommender
+    expose:
+      - "8080"
+    environment:
+      HOST_NAME: "recommender"
+      REGISTRY_HOST: "registry"
+      RABBITMQ_HOST: "rabbitmq"
+    networks:
+        - teastore
+  # ---------------------------------------
+  webui:
+    image: descartesresearch/teastore-webui
+    environment:
+      HOST_NAME: "webui"
+      REGISTRY_HOST: "registry"
+      RABBITMQ_HOST: "rabbitmq"
+    ports:
+      - "8080:8080"
+    networks:
+        - teastore
+ ##########################################################
+  rabbitmq:
+    container_name: RabbitMQ
+    image: rabbitmq:3-management-alpine
+    volumes:
+      - mq_data:/var/lib/rabbitmq/mnesia
+    ports:
+      - "15672:15672"
+      - "5672:5672" 
+    networks:
+      - log
+      - teastore
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: nimda
+      # RABBITMQ_DEFAULT_VHOST: EnterpriseLog
+  ##########################################################
+  elasticsearch:
+    container_name: ElasticSearch    
+    image: docker.elastic.co/elasticsearch/elasticsearch-oss:7.8.0
+    environment: 
+      - discovery.type=single-node
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - http.host=0.0.0.0
+      - transport.host=127.0.0.1
+      - network.host=0.0.0.0
+      - cluster.name="elastic_stack_logging"
+      - node.name="elastic_stack_logging_data"
+      - discovery.zen.minimum_master_nodes=1
+      - http.cors.enabled=true
+      - http.cors.allow-origin="*"
+    volumes: 
+      - elasticsearch_data:/usr/share/elasticsearch/data      
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -I -s -L http://localhost:9200 || exit 1"]
+      interval: 30s
+      timeout: 20s
+      retries: 5     
+    networks:
+      - log
+  ##########################################################
+  kibana:
+    container_name: Kibana    
+    image: docker.elastic.co/kibana/kibana-oss:7.8.0
+    environment:
+      - server.name=kibana
+      - server.host="0"
+      - elasticsearch.url=http://elasticsearch:9200
+    depends_on:
+      - elasticsearch
+    ports:
+      - "5601:5601"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -I -s -L http://localhost:5601/ || exit 1"]
+      interval: 30s
+      timeout: 20s
+      retries: 5     
+    networks:
+      - log
+  ##########################################################
+  logstash:
+    container_name: LogStash    
+    image: docker.elastic.co/logstash/logstash-oss:7.8.0
+    volumes:
+      - ./product.logstash.conf:/config/product.logstash.conf      
+    command: logstash -f /config/product.logstash.conf  
+    depends_on:
+      - rabbitmq
+      - elasticsearch
+    networks:
+      - log    
+  ##########################################################
+  metricbeat:
+    container_name: metricbeat
+    build: 
+      context: ./metricbeat
+    user: root
+    volumes:      
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      - elasticsearch
+      - kibana
+    restart: on-failure
+    networks:
+      - log
+    ##########################################################
+  elastichq:
+    container_name: elastichq
+    image: elastichq/elasticsearch-hq
+    depends_on:
+      - elasticsearch
+    ports:
+      - "5000:5000"
+    restart: on-failure
+    networks:
+      - log
+
+
+volumes:
+  mq_data:
+  elasticsearch_data:
+
+networks:
+  log:
+    driver: bridge
+  teastore:
+    driver: bridge
