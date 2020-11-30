@@ -3,7 +3,7 @@
 "Logs, mô?" é uma aplicação que utiliza o [Tea Store](https://github.com/DescartesResearch/TeaStore) com o objetivo de centralizar logs, fornecer informações sobre o funcionamento dos serviços e insights de negócio.
 
 ## Arquitetura
-![Arquitetura do projeto, que utiliza docker e elk stack, junto aos microsserviços da aplicação TeaStore](./assets/arquitetura.png)
+![Arquitetura do projeto, que utiliza docker e elk stack, junto aos microsserviços da aplicação TeaStore](./assets/arquitetura2.jpg)
 
 ## Dependências
 *Em construção..*
