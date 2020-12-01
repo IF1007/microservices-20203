@@ -39,18 +39,29 @@ Após alguns minutos, você será capaz de acessar a aplicação via localhost. 
 | Kibana | http://localhost:5601 |
 | RabbitMQ | http://localhost:15672 |
 
-### Rodando os testes
-Instale as dependências para executar os testes, executando o comando abaixo:
+### Executando os testes
+Inicialmente, caminhe até o diretorio de teste do projeto e instale as dependencias
 
 ```sh
+$ cd microservices-20203/test/
 $ pip install -r requirements.txt
 ```
 
-Para executar os testes:
+Para executar os testes você pode apenas executar o seguinte comando. Executando com os valores padrões. você também 
+pode modificar os valores de quantas execuções de stress será executada, o timeout e frequência de requisições 
 
 ```sh
 $ python stress.py 
 ```
+
+Com a mudança de parâmetro 
+
+```sh
+$ python stress.py -att 100 -tt "0.5" -t 5
+```
+
+Com essa mudança, modificamos para 100 **tentativas** com **timeout** de _meio segundo_ e com **frequência de requisição** de _5 segundos_
+
 
 ## Aplicação referência
 [Tea Store](https://github.com/DescartesResearch/TeaStore) é uma aplicação baseada em microsserviços para ser usada em benchmarks e testes.
