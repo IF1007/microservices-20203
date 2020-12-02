@@ -67,7 +67,7 @@ Com essa mudança, modificamos para 100 **tentativas** com **timeout** de _meio 
 [Tea Store](https://github.com/DescartesResearch/TeaStore) é uma aplicação baseada em microsserviços para ser usada em benchmarks e testes.
 
 ## Screencast
-[Link para o vídeo de exemplo da aplicação]()
+[Link para o vídeo de exemplo da aplicação](https://drive.google.com/file/d/1Gvk82bkb3PF_eiAnPge16VoSANk9oauC/view?usp=sharing)
 
 ## Time
 1. Danilo Lira | <drla@cin.ufpe.br>
